@@ -9,8 +9,10 @@ on:
 
 # jobs build test, lint =================================================
 jobs:
-  build:
-    runs-on: ubuntu-latest 
+  # lint job==========================================================
+  lint-job:
+    name: 'Lint Job'
+    runs-on: ubuntu-latest
 
     steps:
       - name: checkout code
@@ -37,11 +39,48 @@ jobs:
       
       - name: Run lint check
         run: cd ./starter/backend && pipenv run lint
-      
+
+  # Test job ===================================================================
+  test-job:
+    name: 'Test Job'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.11'
+
+      - name: Restore cache
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          
+      - name: Install dependencies
+        run: |
+          cd ./starter/backend
+          python -m pip install --upgrade pip
+          pip install pipenv
+          pipenv install pytest --dev
+          pipenv install --dev
+
       - name: Run tests
         run: |
           cd ./starter/backend 
           pipenv run test
+
+  # Build lint job, Test job ==========================================================
+  build:
+    needs: [lint-job, test-job]
+    runs-on: ubuntu-latest 
+
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v3
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
