@@ -8,7 +8,7 @@ app = Flask(__name__)
 CORS(app)
 app.register_blueprint(movies_api)
 
-# Start app
+# Start app test data merge
 if __name__ == "__main__":
     app.run(
         debug=True,

@@ -16,5 +16,5 @@ function MovieDetail({ movie }) {
     </div>
   );
 }
-
+// test fe init source
 export default MovieDetail;
